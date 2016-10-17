@@ -18,8 +18,8 @@ public class JSONParserTest {
     public void parser_should_parse_the_string_and_return_hashmap_for_object_string() throws Exception {
         String data = "{ foo:bar, bar:foo }";
         HashMap parse = parser.parse(data);
-        assertEquals("bar", (String) parse.get("foo"));
-        assertEquals("foo", (String) parse.get("bar"));
+        assertEquals("bar", parse.get("foo"));
+        assertEquals("foo", parse.get("bar"));
     }
 
     @Test
@@ -42,19 +42,27 @@ public class JSONParserTest {
 
     @Test
     public void parser_should_parse_the_string_with_tree_object_of_object() throws Exception {
-        String data = "{ \"tuple\":{\"state\":{\"some\":\"bar\"},\"full\":\"half\"}}";
+        String data = "{ \"tuple\":{\"state\":{\"some\":\"bar\"},\"full\":\"half\",\"man\":\"women\"},\"some\":{\"thing\":\"works\"},}";
         JSONParser parser = new JSONParser();
         HashMap parse = parser.parse(data);
-        System.out.println(parse);
         HashMap firstInnerObject = (HashMap) parse.get("tuple");
+        HashMap nextObject = (HashMap) parse.get("some");
+        HashMap expectedNextObject = new HashMap();
+        HashMap expectedNextInnerObject = new HashMap();
+        expectedNextInnerObject.put("thing","works");
+        expectedNextObject.put("some",expectedNextInnerObject);
         HashMap secondInnerObject = (HashMap) firstInnerObject.get("state");
         HashMap expectedFirstInnerObject = new HashMap();
         HashMap expectedSecondInnerObject = new HashMap();
         expectedSecondInnerObject.put("some","bar");
         expectedFirstInnerObject.put("state",expectedSecondInnerObject);
+        expectedFirstInnerObject.put("full","half");
+        expectedFirstInnerObject.put("man","women");
         assertEquals(expectedFirstInnerObject, firstInnerObject);
         assertEquals(expectedSecondInnerObject,secondInnerObject);
+        assertEquals(expectedNextInnerObject,nextObject);
         assertEquals("bar",secondInnerObject.get("some"));
+        assertEquals("works",expectedNextInnerObject.get("thing"));
     }
 
     @Test
