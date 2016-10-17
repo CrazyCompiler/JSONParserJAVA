@@ -18,8 +18,8 @@ public class JSONParserTest {
     public void parser_should_parse_the_string_and_return_hashmap_for_object_string() throws Exception {
         String data = "{ foo:bar, bar:foo }";
         HashMap parse = parser.parse(data);
-        assertEquals("bar", parse.get("foo"));
-        assertEquals("foo", parse.get("bar"));
+        assertEquals("bar", (String) parse.get("foo"));
+        assertEquals("foo", (String) parse.get("bar"));
     }
 
     @Test
@@ -42,9 +42,10 @@ public class JSONParserTest {
 
     @Test
     public void parser_should_parse_the_string_with_tree_object_of_object() throws Exception {
-        String data = "{ \"tuple\":{\"state\":{\"some\":\"bar\"}}}";
+        String data = "{ \"tuple\":{\"state\":{\"some\":\"bar\"},\"full\":\"half\"}}";
         JSONParser parser = new JSONParser();
         HashMap parse = parser.parse(data);
+        System.out.println(parse);
         HashMap firstInnerObject = (HashMap) parse.get("tuple");
         HashMap secondInnerObject = (HashMap) firstInnerObject.get("state");
         HashMap expectedFirstInnerObject = new HashMap();
