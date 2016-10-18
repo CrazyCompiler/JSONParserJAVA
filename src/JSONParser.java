@@ -23,13 +23,12 @@ public class JSONParser {
 
         String key = "";
         Object valueObject = new Object();
-        String value = "";
-        boolean isKey = true;
         boolean isString = true;
+        boolean isKey = true;
+        String value = "";
 
         while (data.length() != 0){
             char eachChar = data.charAt(0);
-//            System.out.println(data + "_______" + eachChar);
 
             if (data.length() > 1){
                 data = data.substring(1);
@@ -97,7 +96,10 @@ public class JSONParser {
         HashMap<String, Object> arrayResultObject = new HashMap<String, Object>();
         ArrayList resultArray = new ArrayList();
         String value = "";
+
+        Object valueObject = new Object();
         boolean isString = true;
+
         while (data.length() != 0) {
             char eachChar = data.charAt(0);
 
@@ -107,14 +109,36 @@ public class JSONParser {
 
             switch (eachChar) {
                 case ']':
-                    resultArray.add(value);
+                    if (value.length() > 0)
+                        resultArray.add(value);
+                    else
+                        resultArray.add(valueObject);
                     arrayResultObject.put("remainingData",data);
                     arrayResultObject.put("result",resultArray);
                     return arrayResultObject;
 
                 case ',':
-                    resultArray.add(value);
+                    if (value.length() > 0)
+                        resultArray.add(value);
+                    else
+                        resultArray.add(valueObject);
                     value = "";
+                    isString = true;
+                    break;
+
+                case '{':
+                    isString = false;
+                    HashMap[] resultObject = parseObject(data);
+                    valueObject = resultObject[0];
+                    data = (String) resultObject[1].get("remainingData");
+                    break;
+
+                case '[':
+                    isString = false;
+                    HashMap resultArrayObject = parseArray(data);
+                    valueObject = resultArrayObject.get("result");
+
+                    data = (String) resultArrayObject.get("remainingData");
                     break;
 
                 default:

@@ -102,6 +102,28 @@ public class JSONParserTest {
         expectedFooObject.add(firstExpectedInnerObject);
         expectedFooObject.add(nextExpectedInnerObject);
         assertEquals(expectedFooObject,fooObject);
+        assertEquals(firstExpectedInnerObject,fooObject.get(0));
+        assertEquals(nextExpectedInnerObject,fooObject.get(1));
+    }
+
+
+    @Test
+    public void parser_should_parse_the_string_with_array_inside_array() throws Exception {
+        String data = "{ \"foo\":[[\"bar\"],[\"hello\",\"woman\"]]}";
+        JSONParser parser = new JSONParser();
+        HashMap parse = parser.parse(data);
+        ArrayList result = (ArrayList) parse.get("foo");
+        ArrayList expectedResult = new ArrayList();
+        ArrayList expectedFirstArrayList = new ArrayList();
+        expectedFirstArrayList.add("bar");
+        ArrayList expectedSecondArrayList = new ArrayList();
+        expectedSecondArrayList.add("hello");
+        expectedSecondArrayList.add("woman");
+        expectedResult.add(expectedFirstArrayList);
+        expectedResult.add(expectedSecondArrayList);
+        assertEquals(expectedFirstArrayList,result.get(0));
+        assertEquals(expectedSecondArrayList,result.get(1));
+        assertEquals(expectedResult,result);
 
     }
 }
