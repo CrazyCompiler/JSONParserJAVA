@@ -1,9 +1,6 @@
 import util.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.StringJoiner;
+import java.util.*;
 
 public class JSONParser {
     private Extractors[] extractors = {new EmptyStringExtractor(), new DoubleQuotExtractor(), new BackSlashExtractor()};
@@ -30,8 +27,9 @@ public class JSONParser {
         boolean isKey = true;
         boolean isString = true;
 
-        for (int i = 0; data.length() != 0; i++){
+        while (data.length() != 0){
             char eachChar = data.charAt(0);
+//            System.out.println(data + "_______" + eachChar);
 
             if (data.length() > 1){
                 data = data.substring(1);
@@ -62,7 +60,6 @@ public class JSONParser {
                     break;
 
                 case '}':
-
                     if (value.length() > 0)
                         obj.put(key, value);
                     else
@@ -71,11 +68,15 @@ public class JSONParser {
                     remainingData.put("remainingData", data);
                     result[0] = obj;
                     result[1] = remainingData;
-                    key = "";
-                    value = "";
-                    isKey = true;
-                    isString = false;
                     return result;
+
+                case '[' :
+                    isString = false;
+                    HashMap resultArrayObject = parseArray(data);
+                    valueObject = resultArrayObject.get("result");
+
+                    data = (String) resultArrayObject.get("remainingData");
+                    break;
 
                 default:
                     if (isKey) {
@@ -89,5 +90,40 @@ public class JSONParser {
         result[0] = obj;
         result[1] = remainingData;
         return result;
+    }
+
+    private HashMap parseArray(String data){
+
+        HashMap<String, Object> arrayResultObject = new HashMap<String, Object>();
+        ArrayList resultArray = new ArrayList();
+        String value = "";
+        boolean isString = true;
+        while (data.length() != 0) {
+            char eachChar = data.charAt(0);
+
+            if (data.length() > 1) {
+                data = data.substring(1);
+            }
+
+            switch (eachChar) {
+                case ']':
+                    resultArray.add(value);
+                    arrayResultObject.put("remainingData",data);
+                    arrayResultObject.put("result",resultArray);
+                    return arrayResultObject;
+
+                case ',':
+                    resultArray.add(value);
+                    value = "";
+                    break;
+
+                default:
+                    if(isString){
+                        value += eachChar;
+                    }
+            }
+
+        }
+        return arrayResultObject;
     }
 }
